@@ -8,6 +8,7 @@ import android.util.Log;
  */
 public class Print {
     private static final String TAG = Print.class.getSimpleName();
+    private static final PrintManager manager = PrintManager.getInstance();
 
     public static void v(String tag, String msg) {
         log2Cat(tag,msg,Log.VERBOSE);
@@ -50,5 +51,7 @@ public class Print {
                 Log.w(TAG,"Unknown log level");
                 break;
         }
+
+        manager.log2Disk(tag,msg,level);
     }
 }
