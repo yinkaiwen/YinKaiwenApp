@@ -10,6 +10,7 @@ import java.util.concurrent.Executors;
 import utils.IOUtils.CloseableUtils;
 import utils.IOUtils.FileUtils;
 import utils.IOUtils.IOUtils;
+import utils.apputils.AppUtils;
 import utils.logutils.Log2Disk;
 import utils.logutils.PrintConfigure;
 import utils.timeutils.TimeUtils;
@@ -101,6 +102,8 @@ public class StringLog2Disk implements Log2Disk {
                 .append(level2Str(level))
                 .append(PrintConfigure.FIX_DEVICE_STR)
                 .append(tag)
+                .append(PrintConfigure.FIX_DEVICE_STR)
+                .append(AppUtils.getVersionCode())
                 .append(PrintConfigure.FIX_DEVICE_STR)
                 .append(msg)
                 .append(PrintConfigure.CHANGE_LINE);
