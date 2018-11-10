@@ -55,11 +55,11 @@ public class PrintManager {
     public void init(Activity activity) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             isHasPermission = checkPermission();
-        }else{
+        } else {
             isHasPermission = true;
         }
 
-        if(!isHasPermission){
+        if (!isHasPermission) {
             requestSDCardPermission(activity);
         }
         initConfig();
@@ -68,16 +68,16 @@ public class PrintManager {
     /**
      * 在 Service中直接调用
      */
-    public void init(){
+    public void init() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             isHasPermission = checkPermission();
-        }else{
+        } else {
             isHasPermission = true;
         }
         initConfig();
     }
 
-    private void initConfig(){
+    private void initConfig() {
         initLogDir();
         sLog2Disk = new StringLog2Disk();
     }
@@ -85,7 +85,7 @@ public class PrintManager {
     @TargetApi(Build.VERSION_CODES.M)
     private boolean checkPermission() {
         int checkSelfPermission = BaseApplication.getBaseApplicationContext().checkSelfPermission(PERMISSION);
-        Log.i(TAG,"checkSelfPermission : " + checkSelfPermission);
+        Log.i(TAG, "checkSelfPermission : " + checkSelfPermission);
         if (checkSelfPermission == PackageManager.PERMISSION_GRANTED) {
             return true;
         } else {
@@ -102,19 +102,19 @@ public class PrintManager {
                 if (exists) {
                     //根据进程名称创建相应的目录
                     String processName = AppUtils.getAppName();
-                    if(TextUtils.isEmpty(processName)){
+                    if (TextUtils.isEmpty(processName)) {
                         processName = "mainProcess";
                     }
-                    if("com.example.kevin.yinkaiwenapp".equals(processName)){
+                    if ("com.example.kevin.yinkaiwenapp".equals(processName)) {
                         processName = "main";
-                    }else if("com.example.kevin.yinkaiwenapp:taskProcess".equals(processName)){
+                    } else if ("com.example.kevin.yinkaiwenapp:taskProcess".equals(processName)) {
                         processName = "taskProcess";
                     }
                     File targetDir = new File(logDir, processName);
-                    Log.d(TAG,"targetDir : " + targetDir.getAbsolutePath());
+                    Log.d(TAG, "targetDir : " + targetDir.getAbsolutePath());
                     FileUtils.createDirUnExists(targetDir);
                     LOG_DIR = targetDir;
-                    Log.d(TAG,"LOG_DIR : " + LOG_DIR.getAbsolutePath());
+                    Log.d(TAG, "LOG_DIR : " + LOG_DIR.getAbsolutePath());
                 }
             } else {
                 isSDCardRegular = false;
@@ -126,24 +126,25 @@ public class PrintManager {
     }
 
     public void log2Disk(String tag, String msg, int level) {
-        if(!isHasPermission){
+        if (!isHasPermission) {
             boolean flag = checkPermission();
             isHasPermission = flag;
         }
-        if(isHasPermission){
-            sLog2Disk.log2Disk(LOG_DIR, tag, msg, level);
+        if (isHasPermission) {
+            if (sLog2Disk != null)
+                sLog2Disk.log2Disk(LOG_DIR, tag, msg, level);
         }
     }
 
-    private void requestSDCardPermission(Activity activity){
+    private void requestSDCardPermission(Activity activity) {
         ActivityCompat.requestPermissions(activity,
                 PrintConfigure.LOG_PERMISSION,
                 PrintConfigure.LOG_REQUEST_PERMISSION_TAG);
     }
 
     public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults){
-        if(requestCode == PrintConfigure.LOG_REQUEST_PERMISSION_TAG){
+                                           String permissions[], int[] grantResults) {
+        if (requestCode == PrintConfigure.LOG_REQUEST_PERMISSION_TAG) {
             int length = grantResults.length;
             for (int i = 0; i < length; i++) {
                 if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
@@ -155,8 +156,8 @@ public class PrintManager {
                     isHasPermission = false;
                 }
             }
-        }else {
-            Log.d(TAG,"NO request log permission");
+        } else {
+            Log.d(TAG, "NO request log permission");
         }
     }
 

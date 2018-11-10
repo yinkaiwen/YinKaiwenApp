@@ -7,6 +7,8 @@ import yinkaiwenapp.BaseApplication;
 /**
  * Created by kevin on 2018/11/10.
  * https://github.com/yinkaiwen
+ *
+ * 用来管理 TaskService
  */
 public class TaskServiceMgr {
 
@@ -29,7 +31,7 @@ public class TaskServiceMgr {
 
     public void startTaskService(){
         Intent intent = new Intent(BaseApplication.getBaseApplicationContext(),TaskService.class);
-
+        intent.setAction(ACTION);
         BaseApplication.getBaseApplicationContext().startService(intent);
     }
 }

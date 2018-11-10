@@ -14,7 +14,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <activity android:name=".MainActivity">
+        <activity android:name="activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
@@ -23,11 +23,21 @@
 
         <service
             android:name="remote.TaskService"
+            android:enabled="true"
             android:exported="true"
             android:label="task process"
             android:process=":taskProcess">
             <intent-filter>
                 <action android:name="yinkaiwen.intent.taskservice"/>
+            </intent-filter>
+        </service>
+
+        <service
+            android:name="proxyremote.CallBackService"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="yinkaiwen.intent.proxy"/>
             </intent-filter>
         </service>
 

@@ -1,12 +1,13 @@
-package com.example.kevin.yinkaiwenapp;
+package activity;
 
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 
+import com.example.kevin.yinkaiwenapp.R;
+
 import remote.TaskServiceMgr;
-import utils.logutils.Print;
 import utils.logutils.PrintManager;
 
 public class MainActivity extends AppCompatActivity {

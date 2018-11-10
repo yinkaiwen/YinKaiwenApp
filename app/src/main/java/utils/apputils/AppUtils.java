@@ -13,14 +13,24 @@ import yinkaiwenapp.BaseApplication;
 /**
  * Created by kevin on 2018/11/10.
  * https://github.com/yinkaiwen
+ *
+ * APP的一些工具方法
  */
 public class AppUtils {
-    //获取版本名
+    /**
+     * 获取版本名称
+     *
+     * @return
+     */
     public static String getVersionName() {
         return getPackageInfo() == null ? "0" : getPackageInfo().versionName;
     }
 
-    //获取版本号
+    /**
+     * 获取版本号
+     *
+     * @return
+     */
     public static int getVersionCode() {
         return getPackageInfo() == null ? 0 : getPackageInfo().versionCode;
     }

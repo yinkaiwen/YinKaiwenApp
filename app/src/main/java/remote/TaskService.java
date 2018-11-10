@@ -14,6 +14,14 @@ import utils.logutils.PrintManager;
 /**
  * Created by kevin on 2018/11/10.
  * https://github.com/yinkaiwen
+ *
+ * 当耗操作程放在主进程时，主进程的内存可能会吃紧，会造成主进程卡顿；
+ *
+ * 将部分耗时操作放在远程服务中，可以最大程度地利用手机的性能。
+ *
+ *
+ *
+ *
  */
 public class TaskService extends Service {
 
