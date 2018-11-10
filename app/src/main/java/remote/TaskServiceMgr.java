@@ -27,8 +27,9 @@ public class TaskServiceMgr {
     private TaskServiceMgr() {
     }
 
-    private void startTaskService(){
-        Intent intent = new Intent(ACTION);
+    public void startTaskService(){
+        Intent intent = new Intent(BaseApplication.getBaseApplicationContext(),TaskService.class);
+
         BaseApplication.getBaseApplicationContext().startService(intent);
     }
 }
