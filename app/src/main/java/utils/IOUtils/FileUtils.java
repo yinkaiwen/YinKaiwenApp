@@ -23,9 +23,9 @@ public class FileUtils {
                 boolean isSuccess = dir.mkdirs();
                 if (isSuccess) {
                     flag = true;
-                    Print.i(TAG, String.format("Make dir success : %s", dir.getAbsolutePath()));
+                    Log.i(TAG, String.format("Make dir success : %s", dir.getAbsolutePath()));
                 } else {
-                    Print.i(TAG, String.format("Make dir fail : %s", dir.getAbsolutePath()));
+                    Log.i(TAG, String.format("Make dir fail : %s", dir.getAbsolutePath()));
                 }
             } else {
                 if (!dir.isDirectory()) {

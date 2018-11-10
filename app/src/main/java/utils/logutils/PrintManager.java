@@ -1,8 +1,11 @@
 package utils.logutils;
 
 import android.Manifest;
+import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.Context;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -50,20 +53,39 @@ public class PrintManager {
     }
 
     public void init(Activity activity) {
-        isHasPermission = checkPermission();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            isHasPermission = checkPermission();
+        }else{
+            isHasPermission = true;
+        }
+
         if(!isHasPermission){
             requestSDCardPermission(activity);
         }
-        init();
+        initConfig();
     }
 
-    private void init(){
+    /**
+     * 在 Service中直接调用
+     */
+    public void init(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            isHasPermission = checkPermission();
+        }else{
+            isHasPermission = true;
+        }
+        initConfig();
+    }
+
+    private void initConfig(){
         initLogDir();
         sLog2Disk = new StringLog2Disk();
     }
 
+    @TargetApi(Build.VERSION_CODES.M)
     private boolean checkPermission() {
-        int checkSelfPermission = ContextCompat.checkSelfPermission(BaseApplication.getBaseApplicationContext(), PERMISSION);
+        int checkSelfPermission = BaseApplication.getBaseApplicationContext().checkSelfPermission(PERMISSION);
+        Log.i(TAG,"checkSelfPermission : " + checkSelfPermission);
         if (checkSelfPermission == PackageManager.PERMISSION_GRANTED) {
             return true;
         } else {
@@ -85,6 +107,8 @@ public class PrintManager {
                     }
                     if("com.example.kevin.yinkaiwenapp".equals(processName)){
                         processName = "main";
+                    }else if("com.example.kevin.yinkaiwenapp:taskProcess".equals(processName)){
+                        processName = "taskProcess";
                     }
                     File targetDir = new File(logDir, processName);
                     Log.d(TAG,"targetDir : " + targetDir.getAbsolutePath());
@@ -94,15 +118,21 @@ public class PrintManager {
                 }
             } else {
                 isSDCardRegular = false;
-                Print.w(TAG, "SD Card is wrong.");
+                Print.i(TAG, "SD Card is wrong.");
             }
         } else {
-            Log.w(TAG, "No permission : android.permission.WRITE_EXTERNAL_STORAGE");
+            Log.i(TAG, "No permission : android.permission.WRITE_EXTERNAL_STORAGE");
         }
     }
 
     public void log2Disk(String tag, String msg, int level) {
-        sLog2Disk.log2Disk(LOG_DIR, tag, msg, level);
+        if(!isHasPermission){
+            boolean flag = checkPermission();
+            isHasPermission = flag;
+        }
+        if(isHasPermission){
+            sLog2Disk.log2Disk(LOG_DIR, tag, msg, level);
+        }
     }
 
     private void requestSDCardPermission(Activity activity){
