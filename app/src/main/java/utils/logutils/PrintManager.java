@@ -6,11 +6,13 @@ import android.content.pm.PackageManager;
 import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.text.TextUtils;
 import android.util.Log;
 
 import java.io.File;
 
 import utils.IOUtils.FileUtils;
+import utils.apputils.AppUtils;
 import utils.logutils.Log2DiskImp.StringLog2Disk;
 import yinkaiwenapp.BaseApplication;
 
@@ -76,7 +78,18 @@ public class PrintManager {
                 File logDir = new File(Environment.getExternalStorageDirectory(), PrintConfigure.LOG_DIR_NAME);
                 boolean exists = FileUtils.createDirUnExists(logDir);
                 if (exists) {
-                    LOG_DIR = logDir;
+                    //根据进程名称创建相应的目录
+                    String processName = AppUtils.getAppName();
+                    if(TextUtils.isEmpty(processName)){
+                        processName = "mainProcess";
+                    }
+                    if("com.example.kevin.yinkaiwenapp".equals(processName)){
+                        processName = "main";
+                    }
+                    File targetDir = new File(logDir, processName);
+                    Log.d(TAG,"targetDir : " + targetDir.getAbsolutePath());
+                    FileUtils.createDirUnExists(targetDir);
+                    LOG_DIR = targetDir;
                     Log.d(TAG,"LOG_DIR : " + LOG_DIR.getAbsolutePath());
                 }
             } else {

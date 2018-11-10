@@ -17,10 +17,20 @@
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
-
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+
+        <service
+            android:name="remote.TaskService"
+            android:exported="true"
+            android:label="task process"
+            android:process=":taskProcess">
+            <intent-filter>
+                <action android:name="yinkaiwen.intent.taskservice"/>
+            </intent-filter>
+        </service>
+
     </application>
 
 </manifest>
