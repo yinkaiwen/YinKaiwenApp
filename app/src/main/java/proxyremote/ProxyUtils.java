@@ -8,9 +8,11 @@ import android.os.IBinder;
 
 import org.json.JSONObject;
 
+import remote.config.AIDLMethodName;
 import utils.logutils.Print;
 import yinkaiwenapp.AppConfigure;
 import yinkaiwenapp.BaseApplication;
+
 
 /**
  * Created by kevin on 2018/11/11.
@@ -20,7 +22,7 @@ import yinkaiwenapp.BaseApplication;
  */
 public class ProxyUtils {
 
-    private static final String TAG = "CallBackUtils";
+    private static final String TAG = "ProxyUtils";
     private static ProxyUtils INSTANCE = null;
     public static final String CALLBACK_SERVICE_PROCY_ACTION = "yinkaiwen.intent.proxy";
     private ProxyService mCallBackService = null;
@@ -83,7 +85,7 @@ public class ProxyUtils {
     public void startDownload(JSONObject jsonObject, BaseCallBack callBack) {
         if (mCallBackService != null) {
             Print.i(TAG, "start down load.");
-            mCallBackService.execute(jsonObject,callBack);
+            mCallBackService.execute(jsonObject,callBack, AIDLMethodName.START_DOWN_LOAD);
         } else {
             Print.i(TAG, "startDownload mCallBackService == null");
         }

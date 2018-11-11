@@ -79,8 +79,9 @@ public class TaskServiceMgr {
     private IServiceCallback.Stub mInteractionCallBack = new IServiceCallback.Stub() {
 
         @Override
-        public void execute(String hashParamsString) throws RemoteException {
-            Print.i(TAG, "IServiceCallback onResponse : " + hashParamsString);
+        public void execute(String params) throws RemoteException {
+            Print.i(TAG, "IServiceCallback onResponse : " + params);
+            mIService.onReponse("This is onResponse.");
         }
     };
 

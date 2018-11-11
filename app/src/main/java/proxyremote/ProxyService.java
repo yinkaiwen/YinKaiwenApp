@@ -10,6 +10,9 @@ import android.support.annotation.Nullable;
 
 import org.json.JSONObject;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import remote.TaskServiceMgr;
 import remote.bean.IService;
 import remote.bean.IServiceCallback;
@@ -28,6 +31,7 @@ public class ProxyService extends Service {
     private static final String TAG = "ProxyService";
     RemoteCallbackList<IServiceCallback> mCallbackList = new RemoteCallbackList<>();
 
+    private Map<String, BaseCallBack> executeCallBackMap = new HashMap<>();
 
     @Nullable
     @Override
@@ -72,9 +76,12 @@ public class ProxyService extends Service {
             }
         }
 
+        //item.execute(jsonObject.toString()); 执行后，taskProcess中会回调该方法.
         @Override
         public void onReponse(String hashParamsString) throws RemoteException {
-
+            //todo hashParamsString中包含 code,methodName,params等参数，需要根据methodName找到
+            //对应的callback,再将code和params解析出来.
+            Print.i(TAG,"onReponse : " + hashParamsString);
         }
 
 
@@ -102,16 +109,22 @@ public class ProxyService extends Service {
      *
      * @param jsonObject
      */
-    public void execute(JSONObject jsonObject,BaseCallBack callBack) {
+    public void execute(JSONObject jsonObject, BaseCallBack callBack, String methodName) {
         if (mCallbackList == null) {
             Print.i(TAG, "execute mCallbackList == null");
             return;
         }
-        if(jsonObject == null){
+        if (jsonObject == null) {
             Print.i(TAG, "execute jsonObject == null");
             return;
         }
 
+        BaseCallBack back = executeCallBackMap.get(methodName);
+        if (back == null) {
+            executeCallBackMap.put(methodName, callBack);
+        } else {
+            Print.i(TAG, "executeCallBackMap had " + methodName + " not add.");
+        }
 
         mCallbackList.beginBroadcast();
         int count = mCallbackList.getRegisteredCallbackCount();
@@ -119,7 +132,6 @@ public class ProxyService extends Service {
             IServiceCallback item = mCallbackList.getBroadcastItem(i);
             try {
                 Print.i(TAG, "item.execute");
-                //todo 没有添加callback,需要优化
                 item.execute(jsonObject.toString());
             } catch (RemoteException e) {
                 Print.e(TAG, "index : " + i + "  " + e.getMessage());
@@ -129,4 +141,6 @@ public class ProxyService extends Service {
 
         mCallbackList.finishBroadcast();
     }
+
+
 }
