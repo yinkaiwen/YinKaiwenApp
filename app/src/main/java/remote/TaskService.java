@@ -36,7 +36,21 @@ public class TaskService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+
+        TaskServiceMgr.getInstance().init();
+
         return super.onStartCommand(intent, flags, startId);
+    }
+
+    @Override
+    public boolean onUnbind(Intent intent) {
+        TaskServiceMgr.getInstance().unRegisterCallBack();
+        return super.onUnbind(intent);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
     }
 
     @Nullable

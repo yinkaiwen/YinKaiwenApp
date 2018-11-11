@@ -6,4 +6,7 @@ package yinkaiwenapp;
  */
 public class AppConfigure {
     public static final boolean isRelease = false;
+
+    //package Name 必须与Manifest保持一致
+    public static final String PACKAGE_NAME = "com.example.kevin.yinkaiwenapp";
 }

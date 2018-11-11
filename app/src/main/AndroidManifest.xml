@@ -33,11 +33,12 @@
         </service>
 
         <service
-            android:name="proxyremote.CallBackService"
+            android:name="proxyremote.ProxyService"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
                 <action android:name="yinkaiwen.intent.proxy"/>
+                <action android:name="yinkaiwen.intent.interation"/>
             </intent-filter>
         </service>
 
