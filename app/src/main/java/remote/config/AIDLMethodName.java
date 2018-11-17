@@ -3,6 +3,8 @@ package remote.config;
 /**
  * Created by kevin on 2018/11/11.
  * https://github.com/yinkaiwen
+ *
+ * AIDL调用使用的参数
  */
 public class AIDLMethodName {
 

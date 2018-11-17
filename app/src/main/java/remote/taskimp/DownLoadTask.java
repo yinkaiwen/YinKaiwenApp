@@ -17,6 +17,8 @@ import yinkaiwenapp.ErrorCode;
 /**
  * Created by kevin on 2018/11/17.
  * https://github.com/yinkaiwen
+ * <p>
+ * 下载任务
  */
 public class DownLoadTask implements TaskInterface {
     private static final String TAG = "DownLoadTask";

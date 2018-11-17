@@ -269,6 +269,11 @@ public class ProxyService extends Service {
         }
     }
 
+    /**
+     * 移除所有的监听 关于methodName
+     *
+     * @param methodName
+     */
     public void unRegisterPostReceiverAll(String methodName) {
         if (!TextUtils.isEmpty(methodName)) {
             synchronized (postCallBackMap.getClass()) {
