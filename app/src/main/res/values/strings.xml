@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">YinKaiwenApp</string>
+
+    <string name="app_loading_title">这里有有趣的功能</string>
+    <string name="main_this_is_client">我要传递文件</string>
+    <string name="main_this_is_server">我接收递文件</string>
 </resources>

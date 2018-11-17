@@ -1,10 +1,13 @@
 package proxyremote;
 
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
+import android.support.v4.content.LocalBroadcastManager;
 
 import org.json.JSONObject;
 
@@ -12,6 +15,7 @@ import remote.config.AIDLMethodName;
 import utils.logutils.Print;
 import yinkaiwenapp.AppConfigure;
 import yinkaiwenapp.BaseApplication;
+import yinkaiwenapp.BroadCastAction;
 
 
 /**
@@ -26,6 +30,7 @@ public class ProxyUtils {
     private static ProxyUtils INSTANCE = null;
     public static final String CALLBACK_SERVICE_PROCY_ACTION = "yinkaiwen.intent.proxy";
     private ProxyService mCallBackService = null;
+    private Context mContext;
 
     public static ProxyUtils getInstance() {
         Print.i(TAG, "CallBackUtils.getInstance.");
@@ -40,6 +45,7 @@ public class ProxyUtils {
     }
 
     private ProxyUtils() {
+        mContext = BaseApplication.getBaseApplicationContext();
         bindCallBackService();
     }
 
@@ -50,7 +56,7 @@ public class ProxyUtils {
     private void bindCallBackService() {
         Intent intent = new Intent(BaseApplication.getBaseApplicationContext(), ProxyService.class);
         intent.setAction(CALLBACK_SERVICE_PROCY_ACTION);
-        BaseApplication.getBaseApplicationContext().bindService(intent, mProxyConnection, Service.BIND_AUTO_CREATE);
+        mContext.bindService(intent, mProxyConnection, Service.BIND_AUTO_CREATE);
     }
 
     /**
@@ -72,6 +78,11 @@ public class ProxyUtils {
 
             ProxyService.MyBinder mBinder = (ProxyService.MyBinder) service;
             mCallBackService = mBinder.getCallBackService();
+
+            Intent intent = new Intent();
+            intent.setAction(BroadCastAction.PROXY_SERVICE_BINDED);
+            LocalBroadcastManager manager = LocalBroadcastManager.getInstance(mContext);
+            manager.sendBroadcast(intent);
         }
 
         @Override
