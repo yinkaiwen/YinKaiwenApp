@@ -16,7 +16,9 @@ import java.util.Map;
 import remote.TaskServiceMgr;
 import remote.bean.IService;
 import remote.bean.IServiceCallback;
+import remote.config.AIDLMethodName;
 import utils.logutils.Print;
+import yinkaiwenapp.ErrorCode;
 
 /**
  * Created by kevin on 2018/11/10.
@@ -76,12 +78,29 @@ public class ProxyService extends Service {
             }
         }
 
+
         //item.execute(jsonObject.toString()); 执行后，taskProcess中会回调该方法.
         @Override
-        public void onReponse(String hashParamsString) throws RemoteException {
+        public void onReponse(Map response) throws RemoteException {
             //todo hashParamsString中包含 code,methodName,params等参数，需要根据methodName找到
             //对应的callback,再将code和params解析出来.
-            Print.i(TAG,"onReponse : " + hashParamsString);
+            Print.i(TAG,"onReponse : " + (response == null ? " null" : response.toString()) );
+
+            if(response == null){
+                Print.i(TAG,"response is null");
+            }else{
+                String methodName = (String) response.get(AIDLMethodName.METHOD_NAME);
+                Object obj = response.get(AIDLMethodName.METHOD_PARAMS);
+                int code = (int) response.get(AIDLMethodName.METHOD_ERROR_CODE);
+                BaseCallBack callBack = executeCallBackMap.get(methodName);
+                if(callBack != null){
+                    callBack.onReponse(code,obj);
+                }else{
+                    Print.i(TAG,"onResponse callback is null.");
+                }
+            }
+//            executeCallBackMap.get()
+
         }
 
 
@@ -105,9 +124,11 @@ public class ProxyService extends Service {
 
 
     /**
-     * 主进程中调用的方法
      *
+     * 主进程中调用的方法
      * @param jsonObject
+     * @param callBack
+     * @param methodName
      */
     public void execute(JSONObject jsonObject, BaseCallBack callBack, String methodName) {
         if (mCallbackList == null) {
@@ -126,18 +147,22 @@ public class ProxyService extends Service {
             Print.i(TAG, "executeCallBackMap had " + methodName + " not add.");
         }
 
+
         mCallbackList.beginBroadcast();
         int count = mCallbackList.getRegisteredCallbackCount();
         for (int i = 0; i < count; i++) {
             IServiceCallback item = mCallbackList.getBroadcastItem(i);
             try {
+                //用来封装AIDL的参数
+                Map<String,Object> params = new HashMap<>();
+                params.put(AIDLMethodName.METHOD_NAME,methodName);
+                params.put(AIDLMethodName.METHOD_PARAMS,jsonObject.toString());
                 Print.i(TAG, "item.execute");
-                item.execute(jsonObject.toString());
+                item.execute(params);
             } catch (RemoteException e) {
                 Print.e(TAG, "index : " + i + "  " + e.getMessage());
             }
         }
-
 
         mCallbackList.finishBroadcast();
     }

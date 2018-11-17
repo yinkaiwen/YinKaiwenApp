@@ -7,9 +7,22 @@ import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.os.RemoteException;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
+import proxyremote.BaseCallBack;
 import proxyremote.ProxyService;
 import remote.bean.IService;
 import remote.bean.IServiceCallback;
+import remote.config.AIDLMethodName;
+import remote.taskimp.DownLoadTask;
 import utils.logutils.Print;
 import yinkaiwenapp.AppConfigure;
 import yinkaiwenapp.BaseApplication;
@@ -29,6 +42,10 @@ public class TaskServiceMgr {
     private static TaskServiceMgr INSTANCE = null;
     private IService mIService = null;
 
+    private List<TaskInterface> cacheTasks = new LinkedList<>();
+    //以 methodName : TaskInterface 的方式来保存任务对象
+    private Map<String, TaskInterface> tasks = new HashMap<>();
+
     public static TaskServiceMgr getInstance() {
         if (INSTANCE == null) {
             synchronized (TaskServiceMgr.class) {
@@ -41,7 +58,48 @@ public class TaskServiceMgr {
     }
 
     private TaskServiceMgr() {
+        //初始化TaskInterface,用来反射调用
+        DownLoadTask downLoadTask = DownLoadTask.getInstance();
+        cacheTasks.add(downLoadTask);
+
+
+        while (!cacheTasks.isEmpty()) {
+            TaskInterface task = cacheTasks.remove(0);
+            Method[] methods = task.getClass().getDeclaredMethods();
+            for (Method m : methods) {
+                String methodName = m.getName();
+                if (methodName.startsWith(AIDLMethodName.FIX_START_METHOD_NAME)) {
+                    Print.i(TAG, "put Method : " + methodName);
+                    tasks.put(methodName, task);
+                }
+            }
+        }
     }
+
+    /**
+     * 用来执行TaskInterface的CallBack
+     */
+    private BaseCallBack mCallBack = new BaseCallBack() {
+        @Override
+        public void onReponse(int code, Object obj) {
+            if (obj instanceof HashMap) {
+                Print.i(TAG, "obj : " + obj.toString());
+                HashMap<String, Object> param = (HashMap<String, Object>) obj;
+                String methodName = (String) param.get(AIDLMethodName.METHOD_NAME);
+                Object arg = param.get(AIDLMethodName.METHOD_PARAMS);
+                param.put(AIDLMethodName.METHOD_ERROR_CODE,code);
+
+                Print.i(TAG, "methodName : " + methodName + "  arg : " + arg.toString() + "errorCode : " + code);
+                try {
+                    mIService.onReponse(param);
+                } catch (RemoteException e) {
+                    Print.e(TAG, e.getMessage());
+                }
+            } else {
+                Print.e(TAG, "TaskInterface execute method must onResponse arg is HashMap");
+            }
+        }
+    };
 
     /**
      * 用于跟CallBackService bind.
@@ -78,11 +136,37 @@ public class TaskServiceMgr {
 
     private IServiceCallback.Stub mInteractionCallBack = new IServiceCallback.Stub() {
 
+
         @Override
-        public void execute(String params) throws RemoteException {
-            Print.i(TAG, "IServiceCallback onResponse : " + params);
-            mIService.onReponse("This is onResponse.");
+        public void execute(Map params) throws RemoteException {
+            Print.i(TAG, "IServiceCallback onResponse : " + (params == null ? " null" : params.toString()));
+            //根据params的方法名称，使用反的方式去调用对应类的方法
+
+            if (params == null) {
+                Print.i(TAG, "execute(Map params)  params is null.");
+            } else {
+                try {
+                    String executeMethodName = (String) params.get(AIDLMethodName.METHOD_NAME);
+                    //参数1
+                    String param = (String) params.get(AIDLMethodName.METHOD_PARAMS);
+                    JSONObject arg = new JSONObject(param);
+                    TaskInterface taskInterface = tasks.get(executeMethodName);
+                    Method method = taskInterface.getClass().getMethod(executeMethodName, JSONObject.class, BaseCallBack.class);
+                    method.invoke(taskInterface, arg, mCallBack);
+
+                } catch (NoSuchMethodException e) {
+                    Print.e(TAG, e.getMessage());
+                } catch (IllegalAccessException e) {
+                    Print.e(TAG, e.getMessage());
+                } catch (InvocationTargetException e) {
+                    Print.e(TAG, e.getMessage());
+                } catch (JSONException e) {
+                    Print.e(TAG, e.getMessage());
+                }
+            }
+
         }
+
     };
 
     public void init() {

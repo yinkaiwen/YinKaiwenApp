@@ -13,5 +13,5 @@ interface IService {
     void unRegisterCallBack(IServiceCallback callback);
 
     //TaskService中回调时使用.
-    void onReponse(String hashParamsString);
+    void onReponse(in Map reponse);
 }

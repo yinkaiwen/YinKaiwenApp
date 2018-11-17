@@ -5,6 +5,6 @@ package remote.bean;
 
 interface IServiceCallback {
 
-    void execute(String params);
+    void execute(in Map params);
 
 }

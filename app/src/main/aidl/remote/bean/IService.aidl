@@ -11,5 +11,5 @@ interface IService {
 
     void unRegisterCallBack(IServiceCallback callback);
 
-    void onReponse(String hashParamsString);
+    void onReponse(in Map reponse);
 }

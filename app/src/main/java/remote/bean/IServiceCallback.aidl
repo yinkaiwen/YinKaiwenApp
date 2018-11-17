@@ -6,5 +6,5 @@ package remote.bean;
 interface IServiceCallback {
 
     //ProxyService中用来调用TaskService中的方法
-    void execute(String params);
+    void execute(in Map params);
 }
