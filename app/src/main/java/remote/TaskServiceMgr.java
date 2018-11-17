@@ -24,6 +24,7 @@ import remote.bean.IServiceCallback;
 import remote.config.AIDLMethodName;
 import remote.taskimp.DownLoadTask;
 import utils.logutils.Print;
+import utils.remoteutils.RemoteUtils;
 import yinkaiwenapp.AppConfigure;
 import yinkaiwenapp.BaseApplication;
 
@@ -82,22 +83,24 @@ public class TaskServiceMgr {
     private BaseCallBack mCallBack = new BaseCallBack() {
         @Override
         public void onReponse(int code, Object obj) {
-            if (obj instanceof HashMap) {
-                Print.i(TAG, "obj : " + obj.toString());
-                HashMap<String, Object> param = (HashMap<String, Object>) obj;
-                String methodName = (String) param.get(AIDLMethodName.METHOD_NAME);
-                Object arg = param.get(AIDLMethodName.METHOD_PARAMS);
-                param.put(AIDLMethodName.METHOD_ERROR_CODE,code);
+            if (obj != null) {
+                if (obj instanceof HashMap) {
+                    Print.i(TAG, "obj : " + obj.toString());
+                    HashMap<String, Object> param = RemoteUtils.addErrorCode(code, (HashMap<String, Object>) obj);
 
-                Print.i(TAG, "methodName : " + methodName + "  arg : " + arg.toString() + "errorCode : " + code);
-                try {
-                    mIService.onReponse(param);
-                } catch (RemoteException e) {
-                    Print.e(TAG, e.getMessage());
+                    Print.i(TAG, "param : " + param.toString());
+                    try {
+                        mIService.onReponse(param);
+                    } catch (RemoteException e) {
+                        Print.e(TAG, e.getMessage());
+                    }
+                } else {
+                    Print.e(TAG, "TaskInterface execute method must onResponse arg is HashMap");
                 }
             } else {
-                Print.e(TAG, "TaskInterface execute method must onResponse arg is HashMap");
+                Print.i(TAG, "obj is null.");
             }
+
         }
     };
 

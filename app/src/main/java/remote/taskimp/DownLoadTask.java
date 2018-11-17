@@ -7,8 +7,10 @@ import java.util.Map;
 
 import proxyremote.BaseCallBack;
 import remote.TaskInterface;
+import remote.bean.TestBean;
 import remote.config.AIDLMethodName;
 import utils.logutils.Print;
+import utils.remoteutils.RemoteUtils;
 import yinkaiwenapp.ErrorCode;
 
 /**
@@ -37,10 +39,6 @@ public class DownLoadTask implements TaskInterface {
     public void executeStartDonwLoad(JSONObject params, BaseCallBack callBack){
         Print.i(TAG,"params : " + params);
 
-        Map<String,String> onReponseParams = new HashMap<>();
-        onReponseParams.put(AIDLMethodName.METHOD_NAME,AIDLMethodName.START_DOWN_LOAD);
-        onReponseParams.put(AIDLMethodName.METHOD_PARAMS,"success");
-
-        callBack.onReponse(ErrorCode.SUCCESS,onReponseParams);
+        callBack.onReponse(ErrorCode.SUCCESS, RemoteUtils.toReponseMap(AIDLMethodName.START_DOWN_LOAD,new TestBean()));
     }
 }
