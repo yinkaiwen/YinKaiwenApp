@@ -83,11 +83,20 @@ public class ProxyUtils {
 
 
     public void startDownload(JSONObject jsonObject, BaseCallBack callBack) {
-        if (mCallBackService != null) {
+        if (mCallBackService != null && callBack != null) {
             Print.i(TAG, "start down load.");
-            mCallBackService.execute(jsonObject,callBack, AIDLMethodName.START_DOWN_LOAD);
+            mCallBackService.execute(jsonObject, callBack, AIDLMethodName.START_DOWN_LOAD);
         } else {
-            Print.i(TAG, "startDownload mCallBackService == null");
+            Print.i(TAG, "startDownload mCallBackService == null or callBack is null");
+        }
+    }
+
+    public void receiveDownLoadProcess(BaseCallBack callBack) {
+        if (mCallBackService != null && callBack != null) {
+            Print.i(TAG, "receiveDownLoadProcess.");
+            mCallBackService.registerPostReceiver(AIDLMethodName.DOWN_LOAD_PROCESS, callBack);
+        } else {
+            Print.i(TAG, "receiveDownLoadProcess mCallBackService == null or callBack is null");
         }
     }
 }

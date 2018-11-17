@@ -100,7 +100,6 @@ public class TaskServiceMgr {
             } else {
                 Print.i(TAG, "obj is null.");
             }
-
         }
     };
 
@@ -172,7 +171,7 @@ public class TaskServiceMgr {
 
     };
 
-    public void init() {
+    void init() {
         bindCallBackService();
     }
 
@@ -203,5 +202,22 @@ public class TaskServiceMgr {
         }
     }
 
+    /**
+     * TaskProcess主动上报数据给主进程
+     *
+     * @param code
+     * @param info
+     */
+    public void post(int code, HashMap<String, Object> info) {
+        try {
+            if (mIService != null && info != null) {
+                info = RemoteUtils.addErrorCode(code, info);
+                Print.i(TAG, "info : " + info.toString());
+                mIService.onReponse(info);
+            }
+        } catch (RemoteException e) {
+            Print.e(TAG, e.getMessage());
+        }
+    }
 
 }
